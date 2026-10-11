@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LucidView</title>
+    <style>
+        /* LucidView v5.1 — design tokens
+           Style: dark neumorphic (soft-UI) media module — raised charcoal surfaces
+           with dual soft shadows, inset grooves, capsule gradient accents.
+           Palette: canvas #0B0B0D · face #212227 · groove #0E0E11 · teal #3DE9C6 → azure #3D9BFF */
+        :root {
+            --teal: #3de9c6;
+            --blue: #3d9bff;
+            --grad: linear-gradient(90deg, #3de9c6 0%, #3d9bff 100%);
+            --ink: #062028;                 /* dark text on gradient faces */
+            --bg: #0b0b0d;
+            --surface: #17181c;             /* module base */
+            --face-hi: #24252b;             /* raised face, lit edge */
+            --face-lo: #1c1d22;             /* raised face, shaded edge */
+            --groove: #0e0e11;              /* inset track / fields */
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #f2f3f6;
+            --muted: #9aa0a9;
+            --dim: #63686f;
+            --green: #34d399;
+            --blue-soft: #60a5fa;
+            --amber: #fbbf24;
+            --purple: #c084fc;
+            --red: #ff4d5e;
+            --tw: 16px;                     /* slider thumb diameter == track height */
+            --raise: 4px 4px 10px rgba(0, 0, 0, 0.5), -3px -3px 8px rgba(255, 255, 255, 0.04);
+            --raise-lg: 6px 8px 20px rgba(0, 0, 0, 0.5), -4px -4px 12px rgba(255, 255, 255, 0.035);
+            --press: inset 3px 3px 7px rgba(0, 0, 0, 0.65), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+            --groove-sh: inset 2px 2px 6px rgba(0, 0, 0, 0.65), inset -1px -1px 3px rgba(255, 255, 255, 0.05);
+            --radius: 16px;
+            --radius-sm: 13px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            width: 372px;
+            padding: 0;
+            margin: 0;
+            background:
+                radial-gradient(130% 90% at 50% -10%, #15161b 0%, var(--bg) 58%);
+            color: var(--text);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Detached floating window */
+        body.detached { width: 100%; min-height: 100vh; }
+        body.detached .panel { max-height: calc(100vh - 148px); }
+        body.detached .icon-btn#detach-header-btn { display: none; }
+
+        .demo-banner {
+            display: none;
+            background: rgba(61, 233, 198, 0.07);
+            border-bottom: 1px solid rgba(61, 233, 198, 0.18);
+            color: #7be9d3;
+            font-size: 10.5px;
+            padding: 6px 18px;
+            font-weight: 500;
+        }
+        body.demo .demo-banner { display: block; }
+
+        /* ---- Header ---- */
+        .header {
+            padding: 14px 16px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #141519 0%, #101116 100%);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--grad);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.5px;
+            box-shadow: 0 6px 18px rgba(61, 155, 255, 0.3), 0 2px 8px rgba(61, 233, 198, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            flex-shrink: 0;
+        }
+
+        .header-text { flex: 1; min-width: 0; }
+        .header-text h1 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .header-text p {
+            margin: 2px 0 0;
+            font-size: 10.5px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-orb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--groove);
+            box-shadow: var(--groove-sh);
+            max-width: 118px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+
+        .status-orb::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--dim);
+            flex-shrink: 0;
+        }
+        .status-orb.live {
+            color: var(--teal);
+        }
+        .status-orb.live::before {
+            background: var(--teal);
+            box-shadow: 0 0 10px rgba(61, 233, 198, 0.8);
+        }
+
+        .icon-btn {
+            background: linear-gradient(145deg, var(--face-hi), var(--face-lo));
+            border: none;
+            color: var(--muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color .15s, box-shadow .15s, transform .1s;
+            box-shadow: var(--raise);
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+        .icon-btn:hover { color: var(--teal); }
+        .icon-btn:active { box-shadow: var(--press); transform: scale(0.94); }
+
+        /* ---- Tabs ---- */
+        .tabs {
+            display: flex;
+            padding: 8px 10px 0;
+            gap: 2px;
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+        }
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 650;
+            padding: 8px 2px 10px;
+            cursor: pointer;
+            transition: color .15s, border-color .15s;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+        .tab:hover { color: var(--text); }
+        .tab.active {
+            color: var(--text);
+            border-image: var(--grad) 1;
+            border-bottom: 2px solid var(--teal);
+        }
+
+        .panel {
+            display: none;
+            padding: 14px 16px 16px;
+            max-height: 452px;
+            overflow-y: auto;
+        }
+        .panel.active { display: block; }
+        .panel::-webkit-scrollbar { width: 6px; }
+        .panel::-webkit-scrollbar-track { background: transparent; }
+        .panel::-webkit-scrollbar-thumb { background: #26272d; border-radius: 3px; }
+
+        .section-title {
+            font-size: 9.5px;
+            font-weight: 750;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+            margin: 0 0 9px;
+        }
+        .section { margin-bottom: 14px; }
+        .section:last-child { margin-bottom: 0; }
+
+        /* ---- Cards & buttons ---- */
+        .card {
+            background: linear-gradient(145deg, #1d1e23, #17181c);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px;
+            box-shadow: var(--raise);
+        }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+
+        .btn {
+            background: linear-gradient(145deg, var(--face-hi), var(--face-lo));
+            color: #e8eaee;
+            border: none;
+            padding: 11px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: background .15s, color .15s, transform .1s, box-shadow .15s;
+            box-shadow: var(--raise);
+            font-family: inherit;
+        }
+        .btn:hover {
+            background: linear-gradient(145deg, #282930, #202127);
+            color: #ffffff;
+        }
+        .btn:active { box-shadow: var(--press); transform: scale(0.97); }
+        .btn.on {
+            background: var(--grad);
+            color: var(--ink);
+            font-weight: 750;
+            box-shadow: 0 4px 16px rgba(61, 155, 255, 0.35), 0 2px 8px rgba(61, 233, 198, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        .btn.on:hover { filter: brightness(1.06); }
+        .btn.small { padding: 8px 10px; font-size: 11px; border-radius: 12px; }
+        .btn.full { grid-column: span 2; }
+        .btn.ghost {
+            background: transparent;
+            box-shadow: none;
+            color: var(--muted);
+        }
+        .btn.ghost:hover { color: var(--text); background: linear-gradient(145deg, var(--face-hi), var(--face-lo)); box-shadow: var(--raise); }
+
+        /* ---- Sliders ----
+           Inset groove track + a capsule gradient fill whose rounded end is the
+           thumb itself, coloured --tc (the gradient colour at the current value,
+           set by lvPaintRange in popup.js alongside --p, the fill fraction). */
+        .filter-slider { margin-bottom: 13px; }
+        .filter-slider:last-child { margin-bottom: 0; }
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 12px;
+            margin-bottom: 7px;
+            color: #e6e8ec;
+            font-weight: 600;
+        }
+        .value {
+            font-variant-numeric: tabular-nums;
+            color: #ffffff;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: var(--tw);
+            background: transparent;
+            margin: 2px 0;
+            cursor: pointer;
+            display: block;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: var(--tw);
+            border: none;
+            border-radius: 999px;
+            background:
+                var(--groove)
+                linear-gradient(90deg, var(--teal), var(--blue))
+                left center / calc(var(--tw) / 2 + (100% - var(--tw)) * var(--p, 0)) 100%
+                no-repeat;
+            box-shadow: var(--groove-sh);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: var(--tw);
+            width: var(--tw);
+            border: none;
+            border-radius: 50%;
+            background: var(--tc, var(--blue));
+            margin-top: 0;
+            box-shadow:
+                0 0 0 2px rgba(11, 11, 13, 0.55),
+                0 2px 7px rgba(0, 0, 0, 0.5),
+                0 0 14px rgba(61, 155, 255, 0.3);
+            transition: transform .12s ease;
+        }
+        input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.1); }
+        input[type=range]::-moz-range-track {
+            height: var(--tw);
+            border: none;
+            border-radius: 999px;
+            background:
+                var(--groove)
+                linear-gradient(90deg, var(--teal), var(--blue))
+                left center / calc(var(--tw) / 2 + (100% - var(--tw)) * var(--p, 0)) 100%
+                no-repeat;
+            box-shadow: var(--groove-sh);
+        }
+        input[type=range]::-moz-range-thumb {
+            height: var(--tw);
+            width: var(--tw);
+            border: none;
+            border-radius: 50%;
+            background: var(--tc, var(--blue));
+            box-shadow: 0 0 0 2px rgba(11, 11, 13, 0.55), 0 2px 7px rgba(0, 0, 0, 0.5), 0 0 14px rgba(61, 155, 255, 0.3);
+        }
+
+        /* ---- Chips ---- */
+        .quick-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+        .chip-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .chip-row.three { grid-template-columns: repeat(3, 1fr); }
+
+        .chip {
+            background: linear-gradient(145deg, #222329, #1a1b20);
+            border: none;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 650;
+            padding: 9px 4px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all .15s;
+            box-shadow: var(--raise);
+            font-family: inherit;
+        }
+        .chip:hover { color: var(--text); }
+        .chip:active { box-shadow: var(--press); transform: scale(0.96); }
+        .chip.on {
+            background: var(--grad);
+            color: var(--ink);
+            font-weight: 750;
+            box-shadow: 0 3px 12px rgba(61, 155, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        .chip.on-blue {
+            color: var(--blue-soft);
+            box-shadow: var(--raise), inset 0 0 0 1px rgba(96, 165, 250, 0.4);
+        }
+        .chip.on-amber {
+            color: var(--amber);
+            box-shadow: var(--raise), inset 0 0 0 1px rgba(251, 191, 36, 0.4);
+        }
+        .chip.on-green {
+            color: var(--green);
+            box-shadow: var(--raise), inset 0 0 0 1px rgba(52, 211, 153, 0.4);
+        }
+
+        .hint {
+            font-size: 10px;
+            color: var(--dim);
+            margin-top: 9px;
+            line-height: 1.55;
+        }
+        .hint b { color: var(--muted); font-weight: 650; }
+
+        .kbd-list { display: flex; flex-direction: column; gap: 7px; }
+        .kbd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            color: #d8dbdf;
+        }
+        kbd {
+            background: var(--groove);
+            border: none;
+            box-shadow: var(--groove-sh);
+            border-radius: 7px;
+            padding: 3px 8px;
+            font-size: 10px;
+            font-family: "Cascadia Code", ui-monospace, monospace;
+            color: var(--muted);
+        }
+
+        /* ---- Bookmarks ---- */
+        .bm-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .bm-input {
+            flex: 1;
+            min-width: 0;
+            background: var(--groove);
+            border: none;
+            box-shadow: var(--groove-sh);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 9px 12px;
+            font-size: 11.5px;
+            font-family: inherit;
+            outline: none;
+            transition: box-shadow .15s;
+        }
+        .bm-input:focus {
+            box-shadow: var(--groove-sh), 0 0 0 2px rgba(61, 233, 198, 0.25);
+        }
+        .bm-input::placeholder { color: var(--dim); }
+
+        .bm-list { display: flex; flex-direction: column; gap: 7px; }
+
+        .bm-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(145deg, #1d1e23, #17181c);
+            border: none;
+            border-radius: 14px;
+            padding: 8px 10px;
+            box-shadow: var(--raise);
+            transition: background .15s;
+        }
+        .bm-item:hover { background: linear-gradient(145deg, #212228, #1a1b20); }
+
+        .bm-time {
+            flex-shrink: 0;
+            font-family: "Cascadia Code", ui-monospace, monospace;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--teal);
+            background: var(--groove);
+            box-shadow: var(--groove-sh);
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .bm-time:hover { color: #7df0d9; }
+
+        .bm-body { flex: 1; min-width: 0; cursor: pointer; }
+        .bm-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .bm-note {
+            font-size: 10px;
+            color: var(--dim);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .bm-del {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: var(--dim);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 4px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity .15s, color .15s;
+        }
+        .bm-item:hover .bm-del { opacity: 1; }
+        .bm-del:hover { color: var(--red); }
+
+        .empty {
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            background: rgba(14, 14, 17, 0.5);
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--dim);
+            line-height: 1.55;
+        }
+
+        /* ---- Video list ---- */
+        .vs-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+        }
+        .vs-field { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .vs-field > span {
+            font-size: 9.5px;
+            font-weight: 750;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            flex-shrink: 0;
+        }
+        .vs-select {
+            flex: 1;
+            min-width: 0;
+            background: var(--groove);
+            box-shadow: var(--groove-sh);
+            color: var(--text);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 11.5px;
+            font-family: inherit;
+            font-weight: 550;
+            cursor: pointer;
+            outline: none;
+        }
+        .vs-select:focus { box-shadow: var(--groove-sh), 0 0 0 2px rgba(61, 233, 198, 0.25); }
+        .vs-select option { background: #17181c; color: var(--text); }
+
+        .video-list { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: linear-gradient(145deg, #1d1e23, #17181c);
+            border: none;
+            border-radius: 14px;
+            padding: 8px 9px;
+            cursor: pointer;
+            box-shadow: var(--raise);
+            transition: background .15s, box-shadow .15s;
+        }
+        .video-item:hover { background: linear-gradient(145deg, #212228, #1a1b20); }
+        .video-item.active {
+            background: linear-gradient(145deg, #1c2523, #161d1f);
+            box-shadow: var(--raise), inset 0 0 0 1px rgba(61, 233, 198, 0.45);
+        }
+
+        .q-badge {
+            flex-shrink: 0;
+            min-width: 46px;
+            text-align: center;
+            font-size: 10.5px;
+            font-weight: 750;
+            padding: 4px 6px;
+            border-radius: 8px;
+            background: var(--groove);
+            box-shadow: var(--groove-sh);
+            color: var(--muted);
+            font-family: "Cascadia Code", ui-monospace, monospace;
+        }
+        .q-badge.q-9, .q-badge.q-8 { color: var(--purple); }
+        .q-badge.q-7 { color: var(--blue-soft); }
+        .q-badge.q-6 { color: var(--green); }
+        .q-badge.q-5 { color: var(--amber); }
+        .q-badge.q-0 { color: var(--dim); }
+
+        .vi-body { flex: 1; min-width: 0; }
+        .vi-line1 {
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .vi-line2 {
+            font-size: 10px;
+            color: var(--dim);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .vi-tag {
+            flex-shrink: 0;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            color: var(--teal);
+        }
+
+        /* ---- Gallery ---- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .gallery-item {
+            position: relative;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+            box-shadow: var(--raise);
+            cursor: pointer;
+            aspect-ratio: 16/10;
+            transition: box-shadow .15s;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item:hover {
+            box-shadow: var(--raise), 0 0 0 1px rgba(61, 233, 198, 0.45);
+        }
+        .gallery-empty {
+            grid-column: span 2;
+        }
+
+        /* ---- Session meta ---- */
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--muted);
+            padding: 4px 0;
+        }
+        .meta-row strong {
+            color: var(--text);
+            font-weight: 650;
+            font-family: "Cascadia Code", ui-monospace, monospace;
+            font-size: 10.5px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%) translateY(12px);
+            background: linear-gradient(145deg, #24252b, #1c1d22);
+            border: none;
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 999px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s, transform .2s;
+            z-index: 50;
+            box-shadow: var(--raise-lg), 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">L</div>
+        <div class="header-text">
+            <h1>LucidView</h1>
+            <p>Universal Video Enhancer · v5.1</p>
+        </div>
+        <div class="status-orb" id="status-dot" title="Target video status">No video</div>
+        <button class="icon-btn" id="detach-header-btn" title="Float this window">↗</button>
+    </div>
+
+    <div class="demo-banner">Demo preview — install as an extension for live control.</div>
+
+    <div class="tabs">
+        <button class="tab active" data-panel="panel-enhance">Player</button>
+        <button class="tab" data-panel="panel-marks">Marks</button>
+        <button class="tab" data-panel="panel-videos">Videos</button>
+        <button class="tab" data-panel="panel-color">Color</button>
+        <button class="tab" data-panel="panel-audio">Audio</button>
+        <button class="tab" data-panel="panel-session">Session</button>
+    </div>
+
+    <!-- ============ PLAYER ============ -->
+    <div id="panel-enhance" class="panel active">
+        <div class="section">
+            <div class="section-title">Quick actions</div>
+            <div class="btn-grid">
+                <button id="lucid-btn" class="btn">✦ Lucid Mode</button>
+                <button id="pip-btn" class="btn">▣ PiP Mode</button>
+                <button id="float-btn" class="btn">◫ Float Player</button>
+                <button id="focus-btn" class="btn">◎ Focus Mode</button>
+                <button id="screenshot-btn" class="btn">⬡ Screenshot</button>
+                <button id="overlay-btn" class="btn">☰ OSD Strip</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Transport</div>
+            <div class="btn-grid">
+                <button id="seek-back-btn" class="btn small">« −10s</button>
+                <button id="seek-fwd-btn" class="btn small">+10s »</button>
+                <button id="playpause-btn" class="btn small full">▶ / ⏸ Play · Pause</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Playback</div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Volume</span><span id="volume-txt" class="value">100%</span></div>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1">
+            </div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Speed</span><span id="speed-txt" class="value">1.00×</span></div>
+                <input type="range" id="speed-slider" min="0.25" max="4" step="0.05" value="1">
+            </div>
+            <div class="chip-row" style="margin-top:8px;">
+                <button class="chip speed-chip" data-rate="0.75">0.75×</button>
+                <button class="chip speed-chip on" data-rate="1">1×</button>
+                <button class="chip speed-chip" data-rate="1.25">1.25×</button>
+                <button class="chip speed-chip" data-rate="1.5">1.5×</button>
+            </div>
+            <div class="chip-row" style="margin-top:6px;">
+                <button class="chip speed-chip" data-rate="1.75">1.75×</button>
+                <button class="chip speed-chip" data-rate="2">2×</button>
+                <button class="chip speed-chip" data-rate="3">3×</button>
+                <button class="chip" id="loop-btn">Loop</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Shortcuts</div>
+            <div class="kbd-list">
+                <div class="kbd-row"><span>Play / Pause</span><kbd>Alt + Space</kbd></div>
+                <div class="kbd-row"><span>Cinematic mode</span><kbd>Alt + F</kbd></div>
+                <div class="kbd-row"><span>Float player</span><kbd>Alt + G</kbd></div>
+                <div class="kbd-row"><span>PiP mode</span><kbd>Alt + P</kbd></div>
+                <div class="kbd-row"><span>Focus mode</span><kbd>Alt + H</kbd></div>
+                <div class="kbd-row"><span>Save mark</span><kbd>Alt + M</kbd></div>
+                <div class="kbd-row"><span>Best-quality video</span><kbd>Alt + Q</kbd></div>
+                <div class="kbd-row"><span>Speed up / down</span><kbd>Shift + &gt; / &lt;</kbd></div>
+                <div class="kbd-row"><span>Seek ±10s</span><kbd>Alt + → / ←</kbd></div>
+                <div class="kbd-row"><span>Volume</span><kbd>Ctrl + ↑ / ↓</kbd></div>
+            </div>
+            <p class="hint">On the video: <b>double-click</b> seeks ±10s · <b>mouse wheel</b> changes volume.</p>
+        </div>
+    </div>
+
+    <!-- ============ MARKS ============ -->
+    <div id="panel-marks" class="panel">
+        <div class="section">
+            <div class="section-title">Timestamp marks</div>
+            <div class="bm-toolbar">
+                <input class="bm-input" id="bm-label" placeholder="Label (optional)" maxlength="48">
+                <button class="btn small" id="bm-add-btn" style="flex-shrink:0;">+ Mark</button>
+            </div>
+            <div id="bm-list" class="bm-list"></div>
+            <p class="hint">Marks jump to the exact moment. Notes are stored per page URL with your other site prefs. <b>Alt + M</b> saves the current time instantly.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Frame gallery</div>
+            <div id="gallery-list" class="gallery-grid"></div>
+            <p class="hint">Screenshots from this session (with your color grade baked in). Click to copy again.</p>
+        </div>
+    </div>
+
+    <!-- ============ VIDEOS ============ -->
+    <div id="panel-videos" class="panel">
+        <div class="section">
+            <div class="section-title">Videos on this page</div>
+            <div class="vs-row">
+                <label class="vs-field">
+                    <span>Sort</span>
+                    <select id="video-sort" class="vs-select">
+                        <option value="quality-desc">Quality: High → Low</option>
+                        <option value="quality-asc">Quality: Low → High</option>
+                        <option value="size">Size on screen</option>
+                        <option value="playing">Playing first</option>
+                        <option value="order">Page order</option>
+                    </select>
+                </label>
+                <button class="icon-btn" id="video-refresh" title="Rescan the page for videos">⟳</button>
+            </div>
+            <div class="chip-row">
+                <button class="chip vfilter-chip on" data-min="0">All</button>
+                <button class="chip vfilter-chip" data-min="5">720p+</button>
+                <button class="chip vfilter-chip" data-min="6">1080p+</button>
+                <button class="chip vfilter-chip" data-min="8">4K+</button>
+            </div>
+            <div id="video-list" class="video-list"></div>
+            <p class="hint" id="video-hint">Quality sorting is always available — unknown resolutions show as <b>Auto</b>. Click a row to target colour, PiP, float &amp; shortcuts. <b>Alt + Q</b> jumps to the best-quality video.</p>
+        </div>
+    </div>
+
+    <!-- ============ COLOR ============ -->
+    <div id="panel-color" class="panel">
+        <div class="section">
+            <div class="section-title">Color grading</div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Contrast</span><span id="contrast-txt" class="value">1.00</span></div>
+                <input type="range" id="contrast-slider" min="0.5" max="2" step="0.01" value="1">
+            </div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Saturation</span><span id="saturation-txt" class="value">1.00</span></div>
+                <input type="range" id="saturation-slider" min="0" max="3" step="0.05" value="1">
+            </div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Vibrance</span><span id="vibrance-txt" class="value">0.00</span></div>
+                <input type="range" id="vibrance-slider" min="-1" max="1" step="0.05" value="0">
+            </div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Brightness</span><span id="brightness-txt" class="value">1.00</span></div>
+                <input type="range" id="brightness-slider" min="0.5" max="1.5" step="0.01" value="1">
+            </div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Hue Rotate</span><span id="hue-txt" class="value">0°</span></div>
+                <input type="range" id="hue-slider" min="-180" max="180" step="1" value="0">
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Presets</div>
+            <div class="quick-presets">
+                <button id="cinematic-preset-btn" class="btn small">✦ Cinematic</button>
+                <button id="vivid-btn" class="btn small">Vivid</button>
+                <button id="warm-btn" class="btn small">Warm</button>
+                <button id="noir-btn" class="btn small">Noir</button>
+                <button id="auto-tone-btn" class="btn small">⚡ Auto Tone</button>
+                <button id="reset-filters-btn" class="btn small">↺ Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ AUDIO ============ -->
+    <div id="panel-audio" class="panel">
+        <div class="section">
+            <div class="section-title">Volume boost · up to 400%</div>
+            <div class="filter-slider">
+                <div class="label-row"><span>Boost</span><span id="boost-txt" class="value">1.0×</span></div>
+                <input type="range" id="boost-slider" min="1" max="4" step="0.1" value="1">
+            </div>
+            <p class="hint">Boost above 100% uses a Web Audio gain stage. Watch your ears.</p>
+        </div>
+        <div class="section">
+            <div class="section-title">EQ presets</div>
+            <div class="chip-row">
+                <button class="chip eq-chip on" data-eq="flat">Flat</button>
+                <button class="chip eq-chip" data-eq="bass">Bass+</button>
+                <button class="chip eq-chip" data-eq="voice">Voice</button>
+                <button class="chip eq-chip" data-eq="night">Night</button>
+            </div>
+            <p class="hint"><b>Voice</b> lifts dialog clarity. <b>Night</b> compresses loud peaks so explosions don't wake the house.</p>
+        </div>
+    </div>
+
+    <!-- ============ SESSION ============ -->
+    <div id="panel-session" class="panel">
+        <div class="section">
+            <div class="section-title">Sleep timer</div>
+            <div class="chip-row">
+                <button class="chip sleep-chip" data-min="0">Off</button>
+                <button class="chip sleep-chip" data-min="15">15m</button>
+                <button class="chip sleep-chip" data-min="30">30m</button>
+                <button class="chip sleep-chip" data-min="60">60m</button>
+            </div>
+            <p class="hint" id="sleep-hint">Auto-pauses the video when the timer ends.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Session</div>
+            <div class="btn-grid">
+                <button id="wakelock-btn" class="btn small">☀ Wake Lock</button>
+                <button id="save-prefs-btn" class="btn small">💾 Save Site Prefs</button>
+                <button id="export-btn" class="btn small">⤓ Export</button>
+                <button id="import-btn" class="btn small">⤒ Import</button>
+                <input type="file" id="import-file" accept="application/json" hidden>
+                <button id="detach-btn" class="btn small full">↗ Float This Window</button>
+            </div>
+            <p class="hint">Site prefs re-apply speed, volume, EQ, color &amp; marks on your next visit.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Target video</div>
+            <div class="card">
+                <div class="meta-row"><span>Status</span><strong id="meta-status">—</strong></div>
+                <div class="meta-row"><span>Quality</span><strong id="meta-quality">—</strong></div>
+                <div class="meta-row"><span>Videos found</span><strong id="meta-count">—</strong></div>
+                <div class="meta-row"><span>Resume</span><strong id="meta-resume">—</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="popup.js"></script>
+</body>
+</html>

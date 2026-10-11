@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "LucidView Universal - Floating Video & Enhancer",
+  "version": "5.0",
+  "description": "Ultimate universal video enhancer. Floating player with Ambient Glow, A-B loop & frame-step, filtered PiP, audio EQ (Bass/Voice/Night), volume boost, sleep timer, on-page HUD, per-site memory, wake lock, Lucid cinematic mode, Focus mode, timestamp marks with notes, playback resume, gestures (double-click seek / wheel volume), Media Session keys, frame gallery, and multi-video quality picker. Works on YouTube, TikTok, Vimeo, X, Instagram, Twitch & any HTML5 video.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
